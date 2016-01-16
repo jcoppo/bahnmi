@@ -36,8 +36,8 @@ for (var i = 0; i < numberOfCirc; i++) {
 	var vX = -3 + Math.random() * 6;
 	var vY = -3 + Math.random() * 6;
 
-	// myCircle.vel_x = vX;
-	// myCircle.vel_y = vY;
+	myCircle.vel_x = vX;
+	myCircle.vel_y = vY;
 
 	myCircle.n = circleArray.length;
 
@@ -71,12 +71,12 @@ function mainLoop() {
 
 	// ctx.drawImage(ghost.sprite, ghost.position.x-ghost.width/2, ghost.position.y-ghost.height/2);
 
-	// ghost.draw();
+	ghost.draw();
 	mouse_circle.draw();
 
 	for (var i = 0; i < circleArray.length; i++) {
 		var circ = circleArray[i];
-		// circ.pullTowardPoint(ghost.position.x, ghost.position.y, 0.05)
+		circ.pullTowardPoint(ghost.position.x, ghost.position.y, 0.05)
 		circ.position.x += circ.vel_x;
 		circ.position.y += circ.vel_y;		
 		circ.draw();
