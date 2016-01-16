@@ -1,9 +1,13 @@
 <html>
 <style>
 body {
-	width: 640px;
+
 	background-color: black;
-	margin: auto;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+
+
 }
 header {
 	padding-top: 20;
@@ -14,15 +18,31 @@ header {
 canvas {
 	background-color: #333333;
 }
+
+#screen {
+
+width: 100%;
+background-color: purple;
+
+}
 </style>
+
 <body>
+	<div id="screen">
 <header>Move the Ghost</header>
-<canvas id="my_canvas" width="640" height="500"></canvas>
+
+<canvas id="my_canvas"></canvas>
+
+</div>
 <script>
 //Variable Declariations
 var gameCanvas = document.getElementById('my_canvas');
 var ctx = gameCanvas.getContext('2d');
+  ctx.canvas.width  = window.innerWidth;
+  ctx.canvas.height = window.innerHeight;
 
+// gameCanvas.style.width = 100%;
+// gameCanvas.style.height = 100%;
 var circleArray = [];
 
 //create circles
@@ -68,6 +88,8 @@ gameCanvas.onmousemove = function(e) {
 function mainLoop() {
 
 	ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+	ctx.canvas.width  = window.innerWidth;
+  	ctx.canvas.height = window.innerHeight;
 
 	// ctx.drawImage(ghost.sprite, ghost.position.x-ghost.width/2, ghost.position.y-ghost.height/2);
 
@@ -105,7 +127,7 @@ function Circle() {
 	this.vel_x = 0;
 	this.vel_y = 0;
 
-	this.rad = 30;
+	this.rad = 70;
 
 	this.color_first = randomColor();
 	this.color = this.color_first;
