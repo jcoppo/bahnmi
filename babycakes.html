@@ -1,0 +1,216 @@
+<html>
+<style>
+body {
+	width: 640px;
+	background-color: black;
+	margin: auto;
+}
+header {
+	padding-top: 20;
+	padding-bottom: 20;
+	font: 20px Barrel, sans-serif;
+	color: gray;
+}
+canvas {
+	background-color: #333333;
+}
+</style>
+<body>
+<header>Move the Ghost</header>
+<canvas id="my_canvas" width="640" height="500"></canvas>
+<script>
+//Variable Declariations
+var gameCanvas = document.getElementById('my_canvas');
+var ctx = gameCanvas.getContext('2d');
+
+var circleArray = [];
+
+//create circles
+
+var numberOfCirc = Math.round(Math.random()*20);
+numberOfCirc = 10;
+for (var i = 0; i < numberOfCirc; i++) {
+	var myCircle = new Circle();
+	circleArray.push(myCircle);
+
+	var vX = -3 + Math.random() * 6;
+	var vY = -3 + Math.random() * 6;
+
+	// myCircle.vel_x = vX;
+	// myCircle.vel_y = vY;
+
+	myCircle.n = circleArray.length;
+
+};
+
+var ghost = new SpriteObject("ghost.png", 300, 300, 60, 60);
+
+var mouse_circle = new Circle();
+
+mainLoop();
+
+//Events
+
+gameCanvas.onmousemove = function(e) {
+	var mouse_x = e.clientX - gameCanvas.offsetLeft;
+	var mouse_y = e.clientY - gameCanvas.offsetTop;
+
+	var mouse_position = new Position(mouse_x, mouse_y);
+
+	// ghost.position = mouse_position;
+
+	circleArray[1].position = mouse_position;
+
+	// ghost.position.x = mouse_x;
+	// ghost.position.y = mouse_y;
+}
+
+function mainLoop() {
+
+	ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+	// ctx.drawImage(ghost.sprite, ghost.position.x-ghost.width/2, ghost.position.y-ghost.height/2);
+
+	// ghost.draw();
+	mouse_circle.draw();
+
+	for (var i = 0; i < circleArray.length; i++) {
+		var circ = circleArray[i];
+		// circ.pullTowardPoint(ghost.position.x, ghost.position.y, 0.05)
+		circ.position.x += circ.vel_x;
+		circ.position.y += circ.vel_y;		
+		circ.draw();
+		for (var j = 0; j < circleArray.length; j++) {
+			circ.collideCircleCheck(circleArray[j]);
+		};
+
+		// ctx.beginPath();
+	 //    ctx.moveTo(circ.position.x, circ.position.y, circleArray[circ.n i].);
+	 //    ctx.lineTo(450, 50);
+	 //    ctx.stroke();
+	};
+
+	setTimeout(mainLoop, 1000/60);
+}
+
+function Circle() {
+
+	x = Math.random() * gameCanvas.width;
+	y = Math.random() * gameCanvas.height;
+
+	this.x = x;
+	this.y = y;
+	this.position = new Position(this.x, this.y);
+
+	this.vel_x = 0;
+	this.vel_y = 0;
+
+	this.rad = 30;
+
+	this.color_first = randomColor();
+	this.color = this.color_first;
+
+	this.n; //its number in a series
+
+	this.pullTowardPoint = function(x, y,  amount) {
+	//
+		var angle = pointAngle(this.position.x, this.position.y, x, y);
+		this.vel_x -= amount * Math.cos(angle);
+		this.vel_y += amount * Math.sin(angle);		
+	}
+
+	this.collideCircleCheck = function(circle) {
+		var dist = pointDistance(this.position.x, this.position.y, circle.position.x, circle.position.y);
+		if (dist < this.rad + circle.rad && this.n != circle.n) {
+			this.color = "#eeeeee";
+			console.log('collide');
+		} else {
+			this.color = this.color_first;
+		}
+
+	}
+
+	this.draw = function() {
+		ctx.beginPath();
+		ctx.arc(this.position.x, this.position.y, this.rad, 0, 2*Math.PI);
+		ctx.fillStyle = this.color;
+		ctx.fill();
+
+		ctx.fillStyle = "#111111";
+
+		ctx.font = "12px Arial";
+		ctx.fillText("number" + this.n, this.position.x, this.position.y);
+	}
+
+
+}
+
+function SpriteObject(img, x, y, width, height) {
+	this.sprite = new Image();
+	this.sprite.src = img;
+
+	this.x = x;
+	this.y = y;
+	this.position = new Position(this.x, this.y);
+
+	this.width = width;
+	this.height = height;
+
+	this.vel_x = 0;
+	this.vel_y = 0;
+	this.velocity = new Velocity(this.vel_x, this.vel_y);
+
+	this.draw = function() {
+		ctx.drawImage(this.sprite, this.position.x-this.width/2, this.position.y-this.height/2);
+	}
+
+	this.collideSquare = function(obj) {
+		if (this.x + this.width < obj.x) {return false};
+		if (this.x > obj.x + obj.width) {return false};
+		if (this.y + this.height < obj.y) {return false};
+		if (this.y > obj.y + obj.height) {return false};
+		return true;
+	}
+}
+
+
+function pointAngle(x1, y1, x2, y2) {
+	var dx = x1-x2;
+	var dy = y2-y1;
+	var angle = Math.atan2(dy, dx);
+	return angle;
+}
+function pointDistance(x1, y1, x2, y2) {
+	var dx = x2-x1;
+	var dy = y2-y1;
+	var dist = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
+	return dist;
+}
+
+function randomColor() {
+	var color = "#";
+	for (var i = 0; i < 6; i++) {
+		var string = "0123456789abcdef";
+		var n = Math.round(Math.random() * 16);
+		var letter = string.slice(n, n+1);
+		color += letter;
+	};
+	return color;
+}
+
+//Data Structs
+
+function Position(x, y) {
+	this.x = x;
+	this.y = y;
+}
+function Velocity(dx, dy) {
+	this.dx = dx;
+	this.dy = dy;
+}
+
+
+</script>
+
+</body>
+</html>
